@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>スマホ代 料金診断｜スマホ代のトリセツ</title>
-<meta name="description" content="8つの質問に答えるだけ。今の使い方に合ったプランと、乗り換えた場合の月額の差が分かります。元キャリア店長が作った料金診断です。">
+<meta name="description" content="最大10の質問に答えるだけ。今の使い方に合ったプランと、乗り換えた場合の月額の差が分かります。複数回線の使い分けにも対応。元キャリア店長が作った料金診断です。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="スマホ代 料金診断｜スマホ代のトリセツ">
-<meta property="og:description" content="8つの質問に答えるだけ。今の使い方に合ったプランと、乗り換えた場合の月額の差が分かります。元キャリア店長が作った料金診断です。">
+<meta property="og:description" content="最大10の質問に答えるだけ。今の使い方に合ったプランと、乗り換えた場合の月額の差が分かります。複数回線の使い分けにも対応。元キャリア店長が作った料金診断です。">
 <meta property="og:url" content="https://sumahodai-toriset.github.io/">
 <meta name="twitter:card" content="summary">
 <link rel="canonical" href="https://sumahodai-toriset.github.io/">
@@ -274,7 +274,7 @@
   <header>
     <p class="brand">スマホ代のトリセツ</p>
     <h1>スマホ代 料金診断</h1>
-    <p class="lead">8つの質問に答えるだけ。今の使い方に合ったプランと、乗り換えた場合の月額の差が分かります。</p>
+    <p class="lead">最大10の質問に答えるだけ。今の使い方に合ったプランと、乗り換えた場合の月額の差が分かります。複数回線の使い分けにも対応しています。</p>
   </header>
 
   <div class="progress-area" id="progressArea">
@@ -287,7 +287,7 @@
     <div class="card">
       <p style="margin:0; font-size:.98rem;">元キャリアショップ店長が、店頭で実際にやっていた見直しの手順を、そのまま診断にしました。売りたいプランではなく、<b>あなたの使い方に合うプラン</b>を出します。</p>
       <ul class="start-points">
-        <li>質問は8つ、約30秒で終わります</li>
+        <li>質問は最大10、約30秒で終わります</li>
         <li>今の月額と比べて、いくら変わるかを計算式つきで表示します</li>
         <li>今の契約が合っている場合は、そのことも正直にお伝えします</li>
       </ul>
@@ -360,9 +360,31 @@ const QUESTIONS = [
     ]
   },
   {
+    id: "multiUse", type: "options",
+    text: "あなた自身の回線は、複数を自分で使い分けていますか？",
+    hint: "家族の回線は含みません。メイン回線とサブ回線を、あなた自身が両方使っている場合です。",
+    options: [
+      { v: "single", label: "1回線だけ" },
+      { v: "multi",  label: "複数を使い分けている", sub: "メイン＋データ用、仕事用など" }
+    ]
+  },
+  {
+    id: "secondRole", type: "options",
+    when: function (a) { return a.multiUse === "multi"; },
+    text: "2本目の回線は、主に何に使っていますか？",
+    hint: "",
+    options: [
+      { v: "data", label: "データ通信が中心", sub: "動画・テザリング・サブ機の通信など" },
+      { v: "keep", label: "番号の維持・通話が中心", sub: "データはほとんど使わない" },
+      { v: "work", label: "仕事用に分けている", sub: "仕事の連絡・通信専用" }
+    ]
+  },
+  {
     id: "monthly", type: "money",
     text: "今のスマホ代は、月いくらですか？",
-    hint: "端末の分割代金は除いて、通信料だけで入力してください。請求書やキャリアのアプリで確認できます。"
+    hint: "端末の分割代金は除いて、通信料だけで入力してください。請求書やキャリアのアプリで確認できます。",
+    textMulti: "今のスマホ代は、月いくらですか？（全回線の合計）",
+    hintMulti: "お使いの全回線の通信料を合計した金額を入力してください。端末の分割代金は除きます。"
   },
   {
     id: "data", type: "options",
@@ -542,7 +564,77 @@ function diagnose(a) {
     primary = rakutenCard("main");
     secondary = ahamoCard("sub");
   }
-  return { primary: primary, secondary: secondary };
+
+  /* 複数回線を使い分けている人には、組み合わせを出す（料金は既存の検証済み単価だけを使う。家族割は組み合わせには適用しない） */
+  let combo = null;
+  if (a.multiUse === "multi") {
+    const lines = [];
+    function line(roleLabel, carrier, carrierLabel, planName, price, priceNote, reasons, link) {
+      lines.push({ roleLabel: roleLabel, carrier: carrier, carrierLabel: carrierLabel, planName: planName, price: price, priceNote: priceNote, reasons: reasons, link: link });
+    }
+    if (a.secondRole === "data") {
+      // メイン回線は番号・通話用に小さく、データは2本目の楽天（無制限）に寄せる
+      if (a.priority === "quality") {
+        const p = ahamoPrice("le3", longCall);
+        line("メイン回線（番号・通話）", "ahamo", "ahamo",
+          "ahamo 40GB" + (longCall ? "＋かけ放題" : ""), p,
+          "税込・月額" + (longCall ? "（かけ放題オプション込み）" : "（5分通話無料込み）"),
+          ["ドコモ回線で、番号と通話を安定して使える側に寄せます",
+           "データの大半は2本目に逃がす前提で、容量は最小の40GBに抑えます"],
+          AFF.ahamo);
+      } else if (a.priority === "support") {
+        line("メイン回線（番号・通話）", "ymobile", "ワイモバイル",
+          "シンプル3 S（5GB）", PRICE.ymobile.s,
+          "税込・月額（割引適用前の基本料）",
+          ["店舗で対面相談できる側を、番号と通話のメインにします",
+           "データの大半は2本目に逃がす前提で、最小プランに抑えます"],
+          AFF.ymobile);
+      } else {
+        line("メイン回線（番号・通話）", "rakuten", "楽天モバイル",
+          "Rakuten最強プラン（〜3GB）", rakutenPrice("le3", 1),
+          "税込・月額",
+          ["番号と通話は、段階制の最小（〜3GB）に抑えます",
+           "「Rakuten Link」アプリから発信すれば、国内通話が無料になります"],
+          AFF.rakuten);
+      }
+      line("データ用", "rakuten", "楽天モバイル",
+        "Rakuten最強プラン（20GB超・無制限）", rakutenPrice("over", 1),
+        "税込・月額",
+        ["データは無制限です。動画もテザリングもこちらで使います",
+         "メイン回線のデータ超過を防ぐ役割です"],
+        AFF.rakuten);
+    } else if (a.secondRole === "work") {
+      const main = Object.assign({}, primary, { roleLabel: "プライベート用" });
+      lines.push(main);
+      if (a.priority === "price") {
+        line("仕事用", "rakuten", "楽天モバイル",
+          "Rakuten最強プラン（〜20GB）", rakutenPrice("le20", 1),
+          "税込・月額",
+          ["仕事用のデータは段階制で、使わない月は自動的に安くなります",
+           "「Rakuten Link」アプリから発信すれば、国内通話が無料になります"],
+          AFF.rakuten);
+      } else {
+        line("仕事用", "ahamo", "ahamo",
+          "ahamo 40GB", ahamoPrice("le3", false),
+          "税込・月額（5分通話無料込み）",
+          ["仕事用はドコモ回線で、つながりやすさを優先します",
+           "5分以内の通話無料が含まれています"],
+          AFF.ahamo);
+      }
+    } else { // keep：番号の維持・通話が中心
+      const main = Object.assign({}, primary, { roleLabel: "メイン回線" });
+      lines.push(main);
+      line("番号維持用", "rakuten", "楽天モバイル",
+        "Rakuten最強プラン（〜3GB）", rakutenPrice("le3", 1),
+        "税込・月額",
+        ["残したい番号は、段階制の最小で維持します",
+         "データを使わない月は、月" + fmt(rakutenPrice("le3", 1)) + "円に収まります"],
+        AFF.rakuten);
+    }
+    const total = lines.reduce(function (s, l) { return s + l.price; }, 0);
+    combo = { lines: lines, total: total };
+  }
+  return { primary: primary, secondary: secondary, combo: combo };
 }
 
 function fmt(n) { return n.toLocaleString("ja-JP"); }
@@ -573,13 +665,19 @@ $("btnBack").addEventListener("click", function () {
   else { show("start"); }
 });
 
+function activeQuestions() {
+  return QUESTIONS.filter(function (q) { return !q.when || q.when(answers); });
+}
+
 function renderQuestion() {
-  const q = QUESTIONS[step];
-  $("progressLabel").textContent = "質問 " + (step + 1) + " / " + QUESTIONS.length;
-  $("progressBar").style.width = ((step) / QUESTIONS.length * 100) + "%";
+  const list = activeQuestions();
+  const q = list[step];
+  $("progressLabel").textContent = "質問 " + (step + 1) + " / " + list.length;
+  $("progressBar").style.width = ((step) / list.length * 100) + "%";
   $("qNum").textContent = "QUESTION " + (step + 1);
-  $("qText").textContent = q.text;
-  $("qHint").textContent = q.hint || "";
+  const isMultiMonthly = q.id === "monthly" && answers.multiUse === "multi";
+  $("qText").textContent = isMultiMonthly && q.textMulti ? q.textMulti : q.text;
+  $("qHint").textContent = (isMultiMonthly && q.hintMulti ? q.hintMulti : q.hint) || "";
   $("qHint").style.display = q.hint ? "" : "none";
   $("btnBack").textContent = step === 0 ? "← トップへもどる" : "← もどる";
 
@@ -652,7 +750,7 @@ function renderQuestion() {
 }
 
 function next() {
-  if (step < QUESTIONS.length - 1) { step++; renderQuestion(); }
+  if (step < activeQuestions().length - 1) { step++; renderQuestion(); }
   else { $("progressBar").style.width = "100%"; renderResult(); }
 }
 
@@ -676,6 +774,28 @@ function planCardHTML(plan, isMain) {
     '<ul class="plan-reasons">' + reasons + '</ul>' +
     '<div class="ad-area">' +
       '<a class="btn btn-primary btn-aff ' + plan.carrier + '" style="margin-top:0;" href="' + plan.link + '" target="_blank" rel="sponsored noopener">' + btnLabel + '</a>' +
+      '<p class="ad-note"><span class="ad-tag">広告</span>アフィリエイトリンクです。リンク先で申し込むと、運営に紹介料が入る場合があります。</p>' +
+    '</div>' +
+  '</div>';
+}
+
+function comboCardHTML(line) {
+  const reasons = line.reasons.map(function (r) { return "<li>" + r + "</li>"; }).join("");
+  const btnLabel = line.carrier === "rakuten" ? "楽天モバイルの公式サイトへ"
+    : line.carrier === "ahamo" ? "ahamoの公式サイトへ"
+    : "ワイモバイルの公式サイトへ";
+  return "" +
+  '<div class="plan-card">' +
+    '<div class="plan-head">' +
+      '<span class="plan-rank">' + line.roleLabel + '</span>' +
+      '<span class="plan-carrier ' + line.carrier + '">' + line.carrierLabel + '</span>' +
+    '</div>' +
+    '<p class="plan-name">' + line.planName + '</p>' +
+    '<p class="plan-price"><span class="yen">' + fmt(line.price) + '円</span> <span class="per">/ 月</span></p>' +
+    '<p class="plan-price-note">' + line.priceNote + '</p>' +
+    '<ul class="plan-reasons">' + reasons + '</ul>' +
+    '<div class="ad-area">' +
+      '<a class="btn btn-primary btn-aff ' + line.carrier + '" style="margin-top:0;" href="' + line.link + '" target="_blank" rel="sponsored noopener">' + btnLabel + '</a>' +
       '<p class="ad-note"><span class="ad-tag">広告</span>アフィリエイトリンクです。リンク先で申し込むと、運営に紹介料が入る場合があります。</p>' +
     '</div>' +
   '</div>';
@@ -745,8 +865,11 @@ function renderResult() {
   const a = answers;
   const result = diagnose(a);
   const primary = result.primary;
+  const isMulti = !!result.combo;
+  const recPrice = isMulti ? result.combo.total : primary.price;
+  const recLabel = isMulti ? "組み合わせの合計" : "推奨プラン";
   const current = a.monthly;
-  const diff = current - primary.price;
+  const diff = current - recPrice;
   const yearDiff = diff * 12;
   const html = [];
 
@@ -776,7 +899,7 @@ function renderResult() {
       '<div class="verdict">' +
         '<p class="v-label">診断結果</p>' +
         '<p class="v-main" style="font-size:1.15rem;">今の契約は、使い方に合っている可能性があります</p>' +
-        '<p style="font-size:.93rem; color:var(--ink-sub); margin:8px 0 0;">今回の推奨プランは月' + fmt(primary.price) + '円で、あなたが入力した月額（' + fmt(current) + '円）と比べて安くなりませんでした。無理な乗り換えはおすすめしません。下の候補は「回線を変えたい場合の参考」としてご覧ください。</p>' +
+        '<p style="font-size:.93rem; color:var(--ink-sub); margin:8px 0 0;">今回の' + (isMulti ? "組み合わせ" : "推奨プラン") + 'は月' + fmt(recPrice) + '円で、あなたが入力した月額（' + fmt(current) + '円）と比べて安くなりませんでした。無理な乗り換えはおすすめしません。下の候補は「回線を変えたい場合の参考」としてご覧ください。</p>' +
       '</div>'
     );
   }
@@ -786,23 +909,29 @@ function renderResult() {
     '<div class="compare">' +
       '<div class="box"><p class="c-label">今の月額（入力値）</p><p class="c-price">' + fmt(current) + '円</p></div>' +
       '<div class="arrow">→</div>' +
-      '<div class="box after' + (diff > 0 ? "" : " neutral") + '"><p class="c-label">推奨プラン</p><p class="c-price">' + fmt(primary.price) + '円</p></div>' +
+      '<div class="box after' + (diff > 0 ? "" : " neutral") + '"><p class="c-label">' + recLabel + '</p><p class="c-price">' + fmt(recPrice) + '円</p></div>' +
     '</div>'
   );
 
   /* 計算式の明示 */
   if (diff > 0) {
-    html.push('<p class="formula">計算式： あなたが入力した月額 <b>' + fmt(current) + '円</b> − 推奨プラン <b>' + fmt(primary.price) + '円</b> ＝ 月 <b>' + fmt(diff) + '円</b>。年間はこれを12か月分にした <b>' + fmt(yearDiff) + '円</b> です。</p>');
+    html.push('<p class="formula">計算式： あなたが入力した月額 <b>' + fmt(current) + '円</b> − ' + recLabel + ' <b>' + fmt(recPrice) + '円</b> ＝ 月 <b>' + fmt(diff) + '円</b>。年間はこれを12か月分にした <b>' + fmt(yearDiff) + '円</b> です。</p>');
   } else {
-    html.push('<p class="formula">計算式： あなたが入力した月額 <b>' + fmt(current) + '円</b> − 推奨プラン <b>' + fmt(primary.price) + '円</b> ＝ <b>' + fmt(diff) + '円</b>（0円以下＝今のほうが安い、または同等です）。</p>');
+    html.push('<p class="formula">計算式： あなたが入力した月額 <b>' + fmt(current) + '円</b> − ' + recLabel + ' <b>' + fmt(recPrice) + '円</b> ＝ <b>' + fmt(diff) + '円</b>（0円以下＝今のほうが安い、または同等です）。</p>');
   }
 
   if (a.carrier === "rakuten" && primary.carrier === "rakuten") {
     html.push('<p style="font-size:.9rem; color:var(--ink-sub); margin:12px 0 0;">すでに楽天モバイルをお使いですね。使っているデータ量が、上の段階に収まっているかを確認してみてください。</p>');
   }
 
-  html.push(planCardHTML(primary, true));
-  if (result.secondary) html.push(planCardHTML(result.secondary, false));
+  if (isMulti) {
+    result.combo.lines.forEach(function (line) { html.push(comboCardHTML(line)); });
+    html.push('<p class="hm-title" style="margin:20px 0 4px;">1本にまとめるなら</p>');
+    html.push(planCardHTML(primary, false));
+  } else {
+    html.push(planCardHTML(primary, true));
+    if (result.secondary) html.push(planCardHTML(result.secondary, false));
+  }
 
   /* ahamo改定日（2026年12月1日）より前は、改定後の料金で計算している旨の注意を出す。12月1日以降は自動で消える */
   if (new Date() < new Date(2026, 11, 1)) {
@@ -824,7 +953,7 @@ function renderResult() {
   const pageUrl = location.href.split("#")[0];
   const shareText = diff > 0
     ? "スマホ代の料金診断をしたら、今の使い方だと月" + fmt(diff) + "円（年間" + fmt(yearDiff) + "円）安くなる可能性がありました。"
-    : "スマホ代の料金診断をやってみました。今の契約が使い方に合っているか、8つの質問でチェックできます。";
+    : "スマホ代の料金診断をやってみました。今の契約が使い方に合っているかチェックできます。";
   const xUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText) + "&url=" + encodeURIComponent(pageUrl);
   const lineUrl = "https://line.me/R/msg/text/?" + encodeURIComponent(shareText + "\n" + pageUrl);
   html.push(
