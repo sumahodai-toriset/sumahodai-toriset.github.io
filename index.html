@@ -866,8 +866,11 @@ function renderResult() {
   const result = diagnose(a);
   const primary = result.primary;
   const isMulti = !!result.combo;
-  const recPrice = isMulti ? result.combo.total : primary.price;
-  const recLabel = isMulti ? "組み合わせの合計" : "推奨プラン";
+  /* データ用で「1本にまとめた単体」が組み合わせより安い場合は、正直に単体を主表示にする（v3.1） */
+  const comboSwap = isMulti && a.secondRole === "data" && primary.price < result.combo.total;
+  const recPrice = isMulti && !comboSwap ? result.combo.total : primary.price;
+  const recLabel = isMulti && !comboSwap ? "組み合わせの合計" : "推奨プラン";
+  const recNoun = isMulti && !comboSwap ? "組み合わせ" : "推奨プラン";
   const current = a.monthly;
   const diff = current - recPrice;
   const yearDiff = diff * 12;
@@ -899,7 +902,7 @@ function renderResult() {
       '<div class="verdict">' +
         '<p class="v-label">診断結果</p>' +
         '<p class="v-main" style="font-size:1.15rem;">今の契約は、使い方に合っている可能性があります</p>' +
-        '<p style="font-size:.93rem; color:var(--ink-sub); margin:8px 0 0;">今回の' + (isMulti ? "組み合わせ" : "推奨プラン") + 'は月' + fmt(recPrice) + '円で、あなたが入力した月額（' + fmt(current) + '円）と比べて安くなりませんでした。無理な乗り換えはおすすめしません。下の候補は「回線を変えたい場合の参考」としてご覧ください。</p>' +
+        '<p style="font-size:.93rem; color:var(--ink-sub); margin:8px 0 0;">今回の' + recNoun + 'は月' + fmt(recPrice) + '円で、あなたが入力した月額（' + fmt(current) + '円）と比べて安くなりませんでした。無理な乗り換えはおすすめしません。下の候補は「回線を変えたい場合の参考」としてご覧ください。</p>' +
       '</div>'
     );
   }
@@ -924,7 +927,12 @@ function renderResult() {
     html.push('<p style="font-size:.9rem; color:var(--ink-sub); margin:12px 0 0;">すでに楽天モバイルをお使いですね。使っているデータ量が、上の段階に収まっているかを確認してみてください。</p>');
   }
 
-  if (isMulti) {
+  if (comboSwap) {
+    html.push(planCardHTML(primary, true));
+    html.push('<p class="hm-title" style="margin:20px 0 4px;">2本持ち続けたいなら</p>');
+    html.push('<p class="formula">上の1本にまとめるのが一番安くなります。2本の使い分けを続けたい場合は、この組み合わせで合計 月 <b>' + fmt(result.combo.total) + '円</b> です。</p>');
+    result.combo.lines.forEach(function (line) { html.push(comboCardHTML(line)); });
+  } else if (isMulti) {
     result.combo.lines.forEach(function (line) { html.push(comboCardHTML(line)); });
     html.push('<p class="hm-title" style="margin:20px 0 4px;">1本にまとめるなら</p>');
     html.push(planCardHTML(primary, false));
