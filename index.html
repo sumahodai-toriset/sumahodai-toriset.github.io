@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>スマホ代 料金診断｜スマホ代のトリセツ</title>
+<meta name="description" content="8つの質問に答えるだけ。今の使い方に合ったプランと、乗り換えた場合の月額の差が分かります。元キャリア店長が作った料金診断です。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="スマホ代 料金診断｜スマホ代のトリセツ">
+<meta property="og:description" content="8つの質問に答えるだけ。今の使い方に合ったプランと、乗り換えた場合の月額の差が分かります。元キャリア店長が作った料金診断です。">
+<meta property="og:url" content="https://sumahodai-toriset.github.io/">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://sumahodai-toriset.github.io/">
+<style>
+  /* ============================================================
+     デザイン固定事項（2026-11-21 仕上げで確定。制作中に変えない）
+     共通ルール: ~/workspace/design-kit/design-rules.md
+     ------------------------------------------------------------
+     業種と読む人 : スマホ代の見直し診断。一般ユーザー。スマホで
+                    片手・急ぎ気味に見る前提。約30秒で終わる体験にする
+     空気         : 元キャリア店長の信頼感の1方向だけ。煽らない、
+                    数字は正直に大きく、計算式を見せる。押し売り装飾なし
+     配置の型     : 最大幅520px・左右余白18pxを全画面で統一。
+                    1画面1セクション。余白は 8 / 12 / 16 / 24 / 32 の段だけ
+     動きの量     : 画面遷移のフェードと進捗バーのみ。見せ場は結果の
+                    数字の現れ方1か所だけ。それ以外は動かさない
+
+     色の表（役割で固定。これ以外は増やさない）
+       --ink        #1c2733  文字（主）
+       --ink-sub    #5a6a7a  文字（副）・補足
+       --bg         #f6f7f9  画面の背景
+       --card       #ffffff  カードの面
+       --line       #e2e7ee  区切り・枠
+       --accent     #0b5cad  操作と強調（主CTA／選択中／進捗）
+       --accent-dark#084a8a  主CTAのホバー
+       --accent-soft#eaf2fa  選択中の面
+       --save       #1e7d4f  削減額など「下がる」数字
+       --save-soft  #e9f5ee  削減側の面
+       --warn-*           注意喚起専用（背景 #fff7e8／枠 #e8c87a／文字 #6b5410）
+       --rakuten    #bf0000  楽天モバイルの識別専用（他用途に流用しない）
+       --ahamo      #3a4a5c  ahamoの識別専用（同上）
+       --ymobile    #e4002b  ワイモバイルの識別専用（同上）
+     文字の表
+       本文・見出し : システムフォント（端末ネイティブ）で統一
+       数字         : tabular-nums で桁を揃える。価格と差額は大きく太く
+     ============================================================ */
+  :root{
+    --ink:#1c2733;
+    --ink-sub:#5a6a7a;
+    --bg:#f6f7f9;
+    --card:#ffffff;
+    --line:#e2e7ee;
+    --accent:#0b5cad;
+    --accent-dark:#084a8a;
+    --accent-soft:#eaf2fa;
+    --save:#1e7d4f;
+    --save-soft:#e9f5ee;
+    --warn-bg:#fff7e8;
+    --warn-line:#e8c87a;
+    --warn-ink:#6b5410;
+    --rakuten:#bf0000;
+    --ahamo:#3a4a5c;
+    --ymobile:#e4002b;
+    --radius:14px;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html{ font-size:16px; }
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+    line-height:1.7; letter-spacing:.01em;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  }
+  .wrap{ max-width:520px; margin:0 auto; padding:0 18px calc(56px + env(safe-area-inset-bottom)); }
+
+  /* ===== ヘッダー ===== */
+  header{ padding:24px 0 8px; text-align:center; }
+  .brand{ font-size:.78rem; font-weight:700; letter-spacing:.14em; color:var(--accent); margin:0 0 4px; }
+  header h1{ font-size:1.55rem; margin:0; font-weight:800; letter-spacing:.02em; }
+  .lead{ color:var(--ink-sub); font-size:.92rem; margin:10px 0 0; }
+
+  /* ===== 進捗 ===== */
+  .progress-area{ margin:24px 0 16px; display:none; }
+  .progress-area.on{ display:block; }
+  .progress-meta{ display:flex; justify-content:space-between; font-size:.8rem; color:var(--ink-sub); margin-bottom:8px; }
+  .progress-track{ height:6px; background:var(--line); border-radius:99px; overflow:hidden; }
+  .progress-bar{ height:100%; width:0; background:var(--accent); border-radius:99px; transition:width .4s cubic-bezier(.22,.8,.32,1); }
+
+  /* ===== 画面共通 ===== */
+  .screen{ display:none; }
+  .screen.on{ display:block; animation:fadein .3s ease; }
+  @keyframes fadein{ from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:none;} }
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:24px 20px; box-shadow:0 1px 2px rgba(20,40,60,.04), 0 8px 24px rgba(20,40,60,.05);
+  }
+
+  /* ===== スタート画面 ===== */
+  .start-points{ margin:16px 0 0; padding:0; list-style:none; }
+  .start-points li{ padding:9px 0 9px 30px; position:relative; font-size:.95rem; border-bottom:1px dashed var(--line); }
+  .start-points li:last-child{ border-bottom:none; }
+  .start-points li::before{
+    content:"✓"; position:absolute; left:2px; top:9px;
+    color:var(--save); font-weight:800;
+  }
+  .privacy-note{ font-size:.8rem; color:var(--ink-sub); margin:14px 0 0; text-align:center; }
+
+  /* ===== ボタン ===== */
+  .btn{
+    display:block; width:100%; border:none; cursor:pointer; text-align:center;
+    font-size:1.02rem; font-weight:700; border-radius:12px; padding:15px 18px;
+    font-family:inherit; transition:background .15s ease, border-color .15s ease, color .15s ease, transform .05s ease;
+  }
+  .btn:active{ transform:scale(.99); }
+  .btn-primary{ background:var(--accent); color:#fff; margin-top:24px; min-height:54px; }
+  @media (hover:hover){ .btn-primary:hover{ background:var(--accent-dark); } }
+  .btn-ghost{ background:#fff; color:var(--ink-sub); border:1px solid var(--line); font-weight:600; font-size:.92rem; padding:12px 16px; }
+  .btn-back{
+    background:none; border:none; color:var(--ink-sub); font-size:.9rem; cursor:pointer;
+    padding:8px 4px; margin-top:16px; font-family:inherit;
+  }
+  /* キーボード操作時のフォーカスを全操作要素で共通化 */
+  .btn:focus-visible, .opt:focus-visible, .chip:focus-visible,
+  .share-btn:focus-visible, .btn-back:focus-visible,
+  .money-row input:focus-visible{
+    outline:2px solid var(--accent); outline-offset:2px;
+  }
+
+  /* ===== 質問 ===== */
+  .q-num{ font-size:.8rem; font-weight:700; color:var(--accent); letter-spacing:.1em; margin:0 0 6px; }
+  .q-text{ font-size:1.22rem; font-weight:800; margin:0 0 6px; line-height:1.5; }
+  .q-hint{ font-size:.85rem; color:var(--ink-sub); margin:0 0 16px; }
+  .options{ display:flex; flex-direction:column; gap:12px; margin-top:16px; }
+  .opt{
+    display:flex; align-items:center; gap:12px; width:100%; text-align:left; cursor:pointer;
+    background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:14px 16px;
+    min-height:56px; line-height:1.5;
+    font-size:1rem; font-family:inherit; color:var(--ink); transition:border-color .12s ease, background .12s ease, transform .05s ease;
+  }
+  /* 選択肢のラジオ型インジケーター（状態を色だけに頼らないための形の手がかり） */
+  .opt::before{
+    content:""; flex:none; width:22px; height:22px; border-radius:50%;
+    border:1.5px solid var(--line); background:#fff; transition:border-color .12s ease, background .12s ease, box-shadow .12s ease;
+  }
+  @media (hover:hover){ .opt:hover{ border-color:var(--accent); } .opt:hover::before{ border-color:var(--accent); } }
+  .opt:active{ background:var(--accent-soft); transform:scale(.995); }
+  .opt.selected{ border-color:var(--accent); background:var(--accent-soft); font-weight:700; }
+  .opt.selected::before{ background:var(--accent); border-color:var(--accent); box-shadow:inset 0 0 0 3.5px #fff; }
+  .opt .opt-sub{ display:block; font-size:.82rem; color:var(--ink-sub); font-weight:400; margin-top:2px; }
+
+  /* ===== 金額入力 ===== */
+  .money-row{ display:flex; align-items:center; gap:8px; margin-top:16px; }
+  .money-row input{
+    flex:1; min-width:0; font-size:1.5rem; font-weight:700; text-align:right;
+    border:1.5px solid var(--line); border-radius:12px; padding:12px 14px; font-family:inherit; color:var(--ink);
+    background:#fff; font-variant-numeric:tabular-nums;
+  }
+  .money-row input:focus{ outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+  .money-unit{ font-size:1.05rem; font-weight:700; }
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .chip{
+    border:1px solid var(--line); background:#fff; border-radius:99px; padding:8px 14px; min-height:40px;
+    font-size:.88rem; cursor:pointer; font-family:inherit; color:var(--ink); font-variant-numeric:tabular-nums;
+    transition:border-color .12s ease, background .12s ease;
+  }
+  @media (hover:hover){ .chip:hover{ border-color:var(--accent); } }
+  .chip:active{ background:var(--accent-soft); border-color:var(--accent); }
+  .input-error{ display:none; color:#b3261e; font-size:.85rem; margin-top:10px; }
+  .input-error.on{ display:block; }
+
+  /* ===== 結果 ===== */
+  .warn-box{
+    background:var(--warn-bg); border:1px solid var(--warn-line); border-radius:var(--radius);
+    padding:16px 18px; margin-bottom:16px; font-size:.92rem; color:var(--warn-ink);
+  }
+  .warn-box .warn-title{ font-weight:800; margin:0 0 6px; }
+  .warn-box p{ margin:0; }
+  .verdict{ text-align:center; padding:8px 0 2px; animation:verdict-in .45s cubic-bezier(.22,.8,.32,1) both; }
+  /* 見せ場はここ1か所だけ：結果の数字の現れ方 */
+  @keyframes verdict-in{ from{ opacity:0; transform:translateY(10px) scale(.98);} to{ opacity:1; transform:none;} }
+  .verdict .v-label{ font-size:.9rem; color:var(--ink-sub); margin:0; }
+  .verdict .v-main{ font-size:1.3rem; font-weight:800; margin:8px 0 0; line-height:1.55; }
+  .verdict .v-main .num{ font-size:2.5rem; color:var(--save); letter-spacing:.01em; font-variant-numeric:tabular-nums; }
+  .verdict .v-year{ font-size:1rem; margin:8px 0 0; }
+  .verdict .v-year .num{ font-weight:800; color:var(--save); font-variant-numeric:tabular-nums; }
+  .compare{
+    display:flex; align-items:stretch; gap:12px; margin:24px 0 8px;
+  }
+  .compare .box{
+    flex:1; border:1px solid var(--line); border-radius:12px; padding:14px 10px; text-align:center; background:#fff;
+  }
+  .compare .box.after{ border:1.5px solid var(--save); background:var(--save-soft); }
+  .compare .box .c-label{ font-size:.78rem; color:var(--ink-sub); margin:0; }
+  .compare .box .c-price{ font-size:1.2rem; font-weight:700; color:var(--ink-sub); margin:4px 0 0; font-variant-numeric:tabular-nums; }
+  .compare .box.after .c-label{ color:var(--save); font-weight:700; }
+  .compare .box.after .c-price{ font-size:1.55rem; font-weight:800; color:var(--ink); }
+  /* 削減が出ない場合は、推奨側の強調を外して中立色にする（JSで .neutral を付ける） */
+  .compare .box.after.neutral{ border:1px solid var(--line); background:#fff; }
+  .compare .box.after.neutral .c-label{ color:var(--ink-sub); font-weight:400; }
+  .compare .box.after.neutral .c-price{ font-size:1.2rem; font-weight:700; color:var(--ink-sub); }
+  .compare .arrow{ align-self:center; color:var(--accent); font-weight:800; font-size:1.15rem; }
+  .formula{ font-size:.85rem; color:var(--ink-sub); background:#f2f5f8; border-radius:10px; padding:12px 16px; margin:16px 0 0; }
+  .formula b{ color:var(--ink); font-variant-numeric:tabular-nums; }
+
+  .plan-card{ border:1.5px solid var(--line); border-radius:var(--radius); padding:24px 20px; margin-top:24px; background:#fff; }
+  .plan-card.main{ border-color:var(--accent); box-shadow:0 1px 2px rgba(20,40,60,.04), 0 8px 24px rgba(20,40,60,.05); }
+  .plan-head{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .plan-rank{ font-size:.75rem; font-weight:800; letter-spacing:.06em; background:var(--accent); color:#fff; border-radius:6px; padding:3px 9px; }
+  .plan-rank.sub{ background:#8a99a8; }
+  .plan-carrier{ font-size:.78rem; font-weight:700; padding:3px 9px; border-radius:6px; color:#fff; }
+  .plan-carrier.rakuten{ background:var(--rakuten); }
+  .plan-carrier.ahamo{ background:var(--ahamo); }
+  .plan-carrier.ymobile{ background:var(--ymobile); }
+  .plan-name{ font-size:1.12rem; font-weight:800; margin:10px 0 0; line-height:1.5; }
+  .plan-price{ margin:8px 0 0; }
+  .plan-price .yen{ font-size:1.85rem; font-weight:800; font-variant-numeric:tabular-nums; }
+  .plan-price .per{ font-size:.9rem; color:var(--ink-sub); }
+  .plan-price-note{ font-size:.82rem; color:var(--ink-sub); margin:2px 0 0; }
+  .plan-reasons{ margin:12px 0 0; padding:0; list-style:none; }
+  .plan-reasons li{ font-size:.93rem; padding:5px 0 5px 22px; position:relative; }
+  .plan-reasons li::before{ content:"・"; position:absolute; left:4px; font-weight:800; color:var(--accent); }
+  .ad-area{ margin-top:16px; }
+  .btn-aff{ text-decoration:none; }
+  .btn-aff.rakuten{ background:var(--rakuten); }
+  .btn-aff.ahamo{ background:var(--ahamo); }
+  .btn-aff.ymobile{ background:var(--ymobile); }
+  .btn-aff.home{ background:var(--accent); }
+  /* ボタンの階層：主推奨は塗り、副推奨は輪郭だけにして主役を1つに保つ */
+  .plan-card:not(.main) .btn-aff{ background:#fff; border:1.5px solid var(--line); font-size:.98rem; }
+  .plan-card:not(.main) .btn-aff.rakuten{ color:var(--rakuten); border-color:var(--rakuten); }
+  .plan-card:not(.main) .btn-aff.ahamo{ color:var(--ahamo); border-color:var(--ahamo); }
+  .plan-card:not(.main) .btn-aff.ymobile{ color:var(--ymobile); border-color:var(--ymobile); }
+
+  /* ===== 自宅ネットのモジュール（結果画面） ===== */
+  .home-module{ margin-top:24px; }
+  .home-module .hm-title{ font-size:1.05rem; font-weight:800; margin:0 0 6px; }
+  .home-module .hm-lead{ font-size:.9rem; color:var(--ink-sub); margin:0; }
+  .home-card{ border:1.5px solid var(--line); border-radius:var(--radius); padding:20px; margin-top:16px; background:#fff; }
+  .home-card .hc-name{ font-size:1.02rem; font-weight:800; margin:0; }
+  .home-card .hc-price{ font-size:.95rem; margin:6px 0 0; }
+  .home-card .hc-price b{ font-size:1.25rem; font-variant-numeric:tabular-nums; }
+  .ad-note{ font-size:.75rem; color:var(--ink-sub); text-align:center; margin:8px 0 0; }
+  .ad-tag{
+    display:inline-block; font-size:.68rem; font-weight:700; border:1px solid var(--ink-sub);
+    color:var(--ink-sub); border-radius:4px; padding:1px 6px; margin-right:6px; vertical-align:1px;
+  }
+
+  .basis-note{ font-size:.8rem; color:var(--ink-sub); margin:24px 0 0; line-height:1.8; }
+  .share-area{ margin-top:24px; text-align:center; }
+  .share-area .s-label{ font-size:.9rem; font-weight:700; margin:0 0 12px; }
+  .share-btns{ display:flex; gap:10px; justify-content:center; }
+  .share-btn{
+    flex:1; max-width:160px; border-radius:12px; padding:12px 10px; font-size:.95rem; font-weight:700;
+    text-decoration:none; text-align:center; cursor:pointer; border:none; font-family:inherit;
+  }
+  .share-btn.x{ background:#000; color:#fff; }
+  .share-btn.line{ background:#06c755; color:#fff; }
+  .share-btn.more{ background:#fff; color:var(--ink); border:1px solid var(--line); }
+  .share-btn:active{ transform:scale(.98); }
+  .restart-area{ margin-top:24px; }
+
+  footer{ margin-top:40px; text-align:center; font-size:.78rem; color:var(--ink-sub); }
+
+  /* 動きを減らす設定の端末では、遷移と見せ場を止める */
+  @media (prefers-reduced-motion: reduce){
+    .screen.on, .verdict{ animation:none; }
+    .progress-bar, .btn, .opt, .opt::before, .chip{ transition:none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="brand">スマホ代のトリセツ</p>
+    <h1>スマホ代 料金診断</h1>
+    <p class="lead">8つの質問に答えるだけ。今の使い方に合ったプランと、乗り換えた場合の月額の差が分かります。</p>
+  </header>
+
+  <div class="progress-area" id="progressArea">
+    <div class="progress-meta"><span id="progressLabel">質問 1 / 7</span><span>あと少しで結果が出ます</span></div>
+    <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+  </div>
+
+  <!-- スタート画面 -->
+  <section class="screen on" id="screenStart">
+    <div class="card">
+      <p style="margin:0; font-size:.98rem;">元キャリアショップ店長が、店頭で実際にやっていた見直しの手順を、そのまま診断にしました。売りたいプランではなく、<b>あなたの使い方に合うプラン</b>を出します。</p>
+      <ul class="start-points">
+        <li>質問は8つ、約30秒で終わります</li>
+        <li>今の月額と比べて、いくら変わるかを計算式つきで表示します</li>
+        <li>今の契約が合っている場合は、そのことも正直にお伝えします</li>
+      </ul>
+      <button class="btn btn-primary" id="btnStart">診断をはじめる</button>
+      <p class="privacy-note">入力した内容は、このページの中だけで計算します。外部に送信されることはありません。</p>
+      <p class="privacy-note" style="margin-top:6px;">料金は2026年11月21日に各社公式ページで確認した時点のものです。12月1日に改定される料金については、結果画面で注記します。</p>
+    </div>
+  </section>
+
+  <!-- 質問画面 -->
+  <section class="screen" id="screenQuiz">
+    <div class="card">
+      <p class="q-num" id="qNum">QUESTION 1</p>
+      <p class="q-text" id="qText"></p>
+      <p class="q-hint" id="qHint"></p>
+      <div id="qBody"></div>
+      <button class="btn-back" id="btnBack">← もどる</button>
+    </div>
+  </section>
+
+  <!-- 結果画面 -->
+  <section class="screen" id="screenResult">
+    <div id="resultBody"></div>
+  </section>
+
+  <footer>
+    <p>スマホ代のトリセツ｜元キャリア店長によるスマホ代の見直し情報</p>
+  </footer>
+
+</div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   料金データ（税込）
+   楽天モバイル：2026年11月時点の公式料金
+   ahamo：2026年12月1日改定後の料金
+   ============================================================ */
+const PRICE = {
+  rakuten: { le3: 1078, le20: 2178, over: 3278, familyDiscount: 110 },
+  ahamo:   { gb40: 3135, gb60: 4125, gb120: 5115, kakehoudai: 1100 },
+  ymobile: { s: 3278, m: 4378, l: 5478 },
+  home:    { air: 5368, airFromDec: 5698, hikariHome: 5720, hikariMansion: 4400, ouchiwariA: 1650, docomoSet: 1210 }
+};
+const AFF = {
+  rakuten: "https://px.a8.net/svt/ejp?a8mat=4B5VO8+91O5GA+5W58+601S1",
+  ahamo:   "https://px.a8.net/svt/ejp?a8mat=4B5VOA+23M3DM+4TIO+626XU",
+  ymobile: "https://px.a8.net/svt/ejp?a8mat=4B5VO8+9YEZQ2+424K+BZO4H",
+  docomoHikari: "https://px.a8.net/svt/ejp?a8mat=4B5VOA+6RIB76+50+54UVMA",
+  softbankAir:  "https://px.a8.net/svt/ejp?a8mat=4B5VOA+7HPEL6+3SPO+3N1I8Y"
+};
+const BASIS_NOTE = "料金は2026年11月21日に各社公式ページで確認した時点のものです。楽天モバイル・ワイモバイルは2026年11月時点の公式料金（ワイモバイルは割引適用前の基本料）、ahamoは2026年12月1日改定後の料金、SoftBank Airは2026年11月時点の料金（2026年12月1日から月5,698円に改定）で計算しています。端末代・オプション料は含みません。実際の料金は契約内容やキャンペーンで変わることがあります。";
+
+/* ============================================================
+   質問定義
+   ============================================================ */
+const QUESTIONS = [
+  {
+    id: "carrier", type: "options",
+    text: "今お使いのキャリアはどれですか？",
+    hint: "",
+    options: [
+      { v: "docomo",   label: "ドコモ" },
+      { v: "au",       label: "au" },
+      { v: "softbank", label: "ソフトバンク" },
+      { v: "rakuten",  label: "楽天モバイル" },
+      { v: "sub",      label: "格安SIM・サブブランド", sub: "ahamo / povo / LINEMO / ワイモバイル など" },
+      { v: "other",    label: "その他・分からない" }
+    ]
+  },
+  {
+    id: "monthly", type: "money",
+    text: "今のスマホ代は、月いくらですか？",
+    hint: "端末の分割代金は除いて、通信料だけで入力してください。請求書やキャリアのアプリで確認できます。"
+  },
+  {
+    id: "data", type: "options",
+    text: "月に使うデータ量はどのくらいですか？",
+    hint: "スマホの設定アプリ（モバイル通信／データ使用量）で先月分が見られます。",
+    options: [
+      { v: "le3",   label: "〜3GB", sub: "LINEとネット検索が中心" },
+      { v: "le20",  label: "〜20GB", sub: "動画もそこそこ見る" },
+      { v: "mid",   label: "20〜30GB" },
+      { v: "midhi", label: "30〜60GB" },
+      { v: "over",  label: "60GB超・たっぷり使う" }
+    ]
+  },
+  {
+    id: "family", type: "options",
+    text: "家族で何回線まとめていますか？",
+    hint: "同じ名義・同じキャリアでまとめている回線の数です。",
+    options: [
+      { v: 1, label: "自分だけ（1回線）" },
+      { v: 2, label: "2回線" },
+      { v: 3, label: "3回線以上" }
+    ]
+  },
+  {
+    id: "homeNet", type: "options",
+    text: "自宅のインターネットは何を使っていますか？",
+    hint: "",
+    options: [
+      { v: "hikari", label: "光回線あり" },
+      { v: "router", label: "ホームルーター" },
+      { v: "none",   label: "なし（スマホだけ）" }
+    ]
+  },
+  {
+    id: "device", type: "options",
+    text: "端末の分割払いは残っていますか？",
+    hint: "",
+    options: [
+      { v: "yes", label: "残っている" },
+      { v: "no",  label: "ない・払い終わった" }
+    ]
+  },
+  {
+    id: "call", type: "options",
+    text: "電話のかけ方はどれに近いですか？",
+    hint: "",
+    options: [
+      { v: "line",  label: "LINEなどの無料通話が中心" },
+      { v: "short", label: "短い電話が多い", sub: "1回5分くらいまで" },
+      { v: "long",  label: "長電話が多い" }
+    ]
+  },
+  {
+    id: "priority", type: "options",
+    text: "乗り換えるとしたら、何を一番大事にしますか？",
+    hint: "答えによって、おすすめするプランの出し方が変わります。",
+    options: [
+      { v: "price",   label: "とにかく安くしたい" },
+      { v: "quality", label: "電波・つながりやすさは落としたくない", sub: "安さより、今と同じくらい使えることを優先" },
+      { v: "support", label: "手続きは簡単にしたい・店で相談したい", sub: "ネットだけの手続きは不安" }
+    ]
+  }
+];
+
+/* ============================================================
+   診断ロジック
+   ============================================================ */
+// === LOGIC START ===
+function rakutenPrice(data, familyLines) {
+  let p = data === "le3" ? PRICE.rakuten.le3
+        : data === "le20" ? PRICE.rakuten.le20
+        : PRICE.rakuten.over;
+  if (familyLines >= 2) p -= PRICE.rakuten.familyDiscount;
+  return p;
+}
+function ahamoPrice(data, longCall) {
+  let p = data === "over" ? PRICE.ahamo.gb120
+        : data === "midhi" ? PRICE.ahamo.gb60
+        : PRICE.ahamo.gb40;
+  if (longCall) p += PRICE.ahamo.kakehoudai;
+  return p;
+}
+
+function ymobilePrice(data) {
+  if (data === "le3") return PRICE.ymobile.s;
+  if (data === "le20" || data === "mid") return PRICE.ymobile.m;
+  return null; // 30GB超は、一番大きいL（35GB）でも収まる保証がないため推奨しない
+}
+
+function diagnose(a) {
+  const fam = a.family >= 2;
+  const longCall = a.call === "long";
+  const rp = rakutenPrice(a.data, a.family);
+  const ap = ahamoPrice(a.data, longCall);
+  const yp = ymobilePrice(a.data);
+
+  const rakutenPlanName = a.data === "le3" ? "Rakuten最強プラン（〜3GB）"
+    : a.data === "le20" ? "Rakuten最強プラン（〜20GB）"
+    : "Rakuten最強プラン（20GB超・無制限）";
+  const ahamoPlanName = (a.data === "over" ? "ahamo 120GB" : a.data === "midhi" ? "ahamo 60GB" : "ahamo 40GB") + (longCall ? "＋かけ放題" : "");
+
+  function rakutenCard(rank) {
+    const reasons = [];
+    if (a.data === "le3") {
+      reasons.push("使った分だけの段階制プランです。3GB以下なら月" + fmt(rp) + "円に収まります");
+      reasons.push("データをあまり使わない月は、自動的にいちばん安い段階になります");
+    } else if (a.data === "le20") {
+      reasons.push("20GBまで月" + fmt(rp) + "円。超えた月も無制限の段階（3,278円）が上限です");
+    } else {
+      reasons.push("データは無制限で、月" + fmt(rp) + "円です");
+      if (a.data === "mid") reasons.push("20GB以下に収まる月は、段階制で自動的に安くなります");
+      if (a.homeNet === "none") reasons.push("自宅にネット回線がない場合、テザリングで代用する使い方もできます");
+    }
+    if (a.call === "line") reasons.push("通話はLINE中心なら、そのまま通話料はかかりません");
+    if (a.call === "short" || longCall) reasons.push("「Rakuten Link」アプリから発信すれば、国内通話が無料になります");
+    if (fam) reasons.push("家族割（1回線あたり110円引き）を適用した金額です");
+    return {
+      carrier: "rakuten", carrierLabel: "楽天モバイル", rank: rank,
+      planName: rakutenPlanName, price: rp,
+      priceNote: "税込・月額" + (fam ? "（家族割適用後）" : ""),
+      reasons: reasons, link: AFF.rakuten
+    };
+  }
+  function ahamoCard(rank, opts) {
+    opts = opts || {};
+    const reasons = [];
+    if (opts.quality) reasons.push("大手キャリアと同じ、ドコモの回線エリアで使えるプランです。電波の心配を減らしたい方向けです");
+    else reasons.push("ドコモ回線をそのまま使えるプランです");
+    if (a.data === "over") reasons.push("120GBまで月" + fmt(ap) + "円。回線の安定感を重視する方向けです");
+    else if (a.data === "midhi") reasons.push("60GBまで月" + fmt(ap) + "円。ドコモ回線の安定感を重視する方向けです");
+    else reasons.push("40GBまで月" + fmt(ap) + "円。5分以内の通話無料が含まれています");
+    if (longCall) reasons.push("長電話が多いため、かけ放題オプション（月1,100円）を加えた金額です。通常の電話アプリのままかけ放題になります");
+    if (opts.note) reasons.push(opts.note);
+    return {
+      carrier: "ahamo", carrierLabel: "ahamo", rank: rank,
+      planName: ahamoPlanName, price: ap,
+      priceNote: "税込・月額" + (longCall ? "（かけ放題オプション込み）" : "（5分通話無料込み）"),
+      reasons: reasons, link: AFF.ahamo
+    };
+  }
+  function ymobileCard(rank) {
+    const reasons = [];
+    reasons.push("ソフトバンク／ワイモバイルの店舗で、対面で相談しながら手続きできます");
+    if (a.data === "le3") reasons.push("5GBまで月" + fmt(yp) + "円。データが少ない人向けの最小プランです");
+    else reasons.push("30GBまで月" + fmt(yp) + "円です");
+    reasons.push("表示は割引適用前の基本料です。家族割や、自宅ネットとのセット割が使えると、さらに下がります");
+    if (longCall) reasons.push("長電話が多い場合、通話オプションも店頭で一緒に確認してください");
+    return {
+      carrier: "ymobile", carrierLabel: "ワイモバイル", rank: rank,
+      planName: a.data === "le3" ? "シンプル3 S（5GB）" : "シンプル3 M（30GB）", price: yp,
+      priceNote: "税込・月額（割引適用前の基本料）",
+      reasons: reasons, link: AFF.ymobile
+    };
+  }
+
+  let primary, secondary = null;
+  if (a.priority === "quality") {
+    // 電波・つながりやすさ優先：ドコモ回線のahamoを主推奨にし、楽天は「安さでは」という参考に回す
+    primary = ahamoCard("main", { quality: true });
+    secondary = rakutenCard("sub");
+  } else if (a.priority === "support") {
+    // 店舗・手軽さ優先：容量が収まる範囲ではワイモバイル。収まらない場合は正直に理由を書いてahamo
+    if (yp !== null) {
+      primary = ymobileCard("main");
+      secondary = rakutenCard("sub");
+    } else {
+      primary = ahamoCard("main", { note: "ワイモバイルは一番大きいプランでも35GBまでなので、この使用量では容量が足りません。容量に余裕のあるahamoを出しています。手続きはオンラインで完結します" });
+      secondary = null;
+    }
+  } else if (a.data === "le3" || a.data === "le20") {
+    primary = rakutenCard("main");
+    if (longCall) secondary = ahamoCard("sub"); // 長電話の人には「通常の電話アプリでかけ放題」の選択肢も出す
+  } else if (a.data === "mid") {
+    primary = ahamoCard("main");
+    secondary = rakutenCard("sub");
+  } else { // midhi（30〜60GB）/ over（60GB超・たっぷり）
+    primary = rakutenCard("main");
+    secondary = ahamoCard("sub");
+  }
+  return { primary: primary, secondary: secondary };
+}
+
+function fmt(n) { return n.toLocaleString("ja-JP"); }
+// === LOGIC END ===
+
+/* ============================================================
+   画面フロー
+   ============================================================ */
+const answers = {};
+let step = 0;
+
+const $ = function (id) { return document.getElementById(id); };
+const screens = { start: $("screenStart"), quiz: $("screenQuiz"), result: $("screenResult") };
+
+function show(name) {
+  Object.keys(screens).forEach(function (k) { screens[k].classList.toggle("on", k === name); });
+  $("progressArea").classList.toggle("on", name === "quiz");
+  window.scrollTo({ top: 0 });
+}
+
+$("btnStart").addEventListener("click", function () {
+  step = 0;
+  show("quiz");
+  renderQuestion();
+});
+$("btnBack").addEventListener("click", function () {
+  if (step > 0) { step--; renderQuestion(); }
+  else { show("start"); }
+});
+
+function renderQuestion() {
+  const q = QUESTIONS[step];
+  $("progressLabel").textContent = "質問 " + (step + 1) + " / " + QUESTIONS.length;
+  $("progressBar").style.width = ((step) / QUESTIONS.length * 100) + "%";
+  $("qNum").textContent = "QUESTION " + (step + 1);
+  $("qText").textContent = q.text;
+  $("qHint").textContent = q.hint || "";
+  $("qHint").style.display = q.hint ? "" : "none";
+  $("btnBack").textContent = step === 0 ? "← トップへもどる" : "← もどる";
+
+  const body = $("qBody");
+  body.innerHTML = "";
+
+  if (q.type === "options") {
+    const wrap = document.createElement("div");
+    wrap.className = "options";
+    q.options.forEach(function (opt) {
+      const b = document.createElement("button");
+      b.className = "opt" + (answers[q.id] === opt.v ? " selected" : "");
+      b.type = "button";
+      const label = document.createElement("span");
+      label.textContent = opt.label;
+      b.appendChild(label);
+      if (opt.sub) {
+        const s = document.createElement("span");
+        s.className = "opt-sub"; s.textContent = opt.sub;
+        label.appendChild(document.createElement("br"));
+        label.appendChild(s);
+      }
+      b.addEventListener("click", function () {
+        answers[q.id] = opt.v;
+        wrap.querySelectorAll(".opt").forEach(function (el) { el.classList.remove("selected"); });
+        b.classList.add("selected");
+        setTimeout(next, 180);
+      });
+      wrap.appendChild(b);
+    });
+    body.appendChild(wrap);
+  } else if (q.type === "money") {
+    const row = document.createElement("div");
+    row.className = "money-row";
+    const input = document.createElement("input");
+    input.type = "number"; input.inputMode = "numeric"; input.min = "0";
+    input.placeholder = "例）6500";
+    if (answers[q.id]) input.value = answers[q.id];
+    const unit = document.createElement("span");
+    unit.className = "money-unit"; unit.textContent = "円";
+    row.appendChild(input); row.appendChild(unit);
+    body.appendChild(row);
+
+    const chips = document.createElement("div");
+    chips.className = "chips";
+    [3000, 5000, 7000, 10000, 15000].forEach(function (v) {
+      const c = document.createElement("button");
+      c.type = "button"; c.className = "chip"; c.textContent = fmt(v) + "円";
+      c.addEventListener("click", function () { input.value = v; err.classList.remove("on"); });
+      chips.appendChild(c);
+    });
+    body.appendChild(chips);
+
+    const err = document.createElement("p");
+    err.className = "input-error"; err.textContent = "月額を数字で入力してください。";
+    body.appendChild(err);
+
+    const go = document.createElement("button");
+    go.className = "btn btn-primary"; go.type = "button"; go.textContent = "次へ";
+    go.addEventListener("click", function () {
+      const v = parseInt(input.value, 10);
+      if (!v || v <= 0) { err.classList.add("on"); input.focus(); return; }
+      answers[q.id] = v;
+      next();
+    });
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") go.click(); });
+    body.appendChild(go);
+    setTimeout(function () { input.focus(); }, 60);
+  }
+}
+
+function next() {
+  if (step < QUESTIONS.length - 1) { step++; renderQuestion(); }
+  else { $("progressBar").style.width = "100%"; renderResult(); }
+}
+
+/* ============================================================
+   結果表示
+   ============================================================ */
+function planCardHTML(plan, isMain) {
+  const reasons = plan.reasons.map(function (r) { return "<li>" + r + "</li>"; }).join("");
+  const btnLabel = plan.carrier === "rakuten" ? "楽天モバイルの公式サイトへ"
+    : plan.carrier === "ahamo" ? "ahamoの公式サイトへ"
+    : "ワイモバイルの公式サイトへ";
+  return "" +
+  '<div class="plan-card' + (isMain ? " main" : "") + '">' +
+    '<div class="plan-head">' +
+      '<span class="plan-rank' + (isMain ? "" : " sub") + '">' + (isMain ? "おすすめ" : "もう一つの候補") + '</span>' +
+      '<span class="plan-carrier ' + plan.carrier + '">' + plan.carrierLabel + '</span>' +
+    '</div>' +
+    '<p class="plan-name">' + plan.planName + '</p>' +
+    '<p class="plan-price"><span class="yen">' + fmt(plan.price) + '円</span> <span class="per">/ 月</span></p>' +
+    '<p class="plan-price-note">' + plan.priceNote + '</p>' +
+    '<ul class="plan-reasons">' + reasons + '</ul>' +
+    '<div class="ad-area">' +
+      '<a class="btn btn-primary btn-aff ' + plan.carrier + '" style="margin-top:0;" href="' + plan.link + '" target="_blank" rel="sponsored noopener">' + btnLabel + '</a>' +
+      '<p class="ad-note"><span class="ad-tag">広告</span>アフィリエイトリンクです。リンク先で申し込むと、運営に紹介料が入る場合があります。</p>' +
+    '</div>' +
+  '</div>';
+}
+
+function homeCardHTML(name, priceHTML, points, link, btnLabel) {
+  const pts = points.map(function (r) { return "<li>" + r + "</li>"; }).join("");
+  return "" +
+  '<div class="home-card">' +
+    '<p class="hc-name">' + name + '</p>' +
+    '<p class="hc-price">' + priceHTML + '</p>' +
+    '<ul class="plan-reasons">' + pts + '</ul>' +
+    '<div class="ad-area">' +
+      '<a class="btn btn-primary btn-aff home" style="margin-top:0;" href="' + link + '" target="_blank" rel="sponsored noopener">' + btnLabel + '</a>' +
+    '</div>' +
+  '</div>';
+}
+
+function homeModuleHTML(a, primary) {
+  const airPoints = [
+    "工事は不要です。コンセントに挿して、届いたその日から使えます",
+    "データ容量の上限はありません"
+  ];
+  if (primary.carrier === "ymobile") {
+    airPoints.push("おすすめしたワイモバイルとセットにすると、おうち割 光セット（A）でスマホ代が1回線あたり月" + fmt(PRICE.home.ouchiwariA) + "円引きになります（ワイモバイルは月" + fmt(primary.price - PRICE.home.ouchiwariA) + "円になります）");
+  }
+  const airCard = homeCardHTML(
+    "SoftBank Air（ホームルーター）",
+    "月 <b>" + fmt(PRICE.home.air) + "円</b>（2026年12月1日から" + fmt(PRICE.home.airFromDec) + "円に改定）",
+    airPoints, AFF.softbankAir, "SoftBank Airの公式サイトへ"
+  );
+
+  const hikariPoints = [
+    "速さと安定で選ぶなら光回線です",
+    "ドコモのスマホ（ドコモ MAX・eximoなど）は、セット割で1回線あたり月最大" + fmt(PRICE.home.docomoSet) + "円引きになります"
+  ];
+  if (primary.carrier === "ahamo") hikariPoints.push("ただしahamoはセット割の対象外です。この割引は受けられません");
+  const hikariCard = homeCardHTML(
+    "ドコモ光（光回線）",
+    "マンション 月 <b>" + fmt(PRICE.home.hikariMansion) + "円</b> ／ 戸建て 月 <b>" + fmt(PRICE.home.hikariHome) + "円</b>（1ギガ・タイプA・2年定期契約、プロバイダ料込み）",
+    hikariPoints, AFF.docomoHikari, "ドコモ光の申込ページへ"
+  );
+
+  let lead, cards;
+  const hikariFirst = primary.carrier === "ahamo";
+  if (a.homeNet === "hikari") {
+    lead = "今の光回線の料金が高いと感じる場合は、乗り換え先の候補です。";
+    cards = hikariCard;
+  } else if (a.homeNet === "router") {
+    lead = hikariFirst
+      ? "今お使いのホームルーターと比べてください。速さで選ぶ光回線と、工事なしで始めるタイプです。"
+      : "今お使いのホームルーターと比べてください。工事なしで始めるタイプと、速さで選ぶ光回線です。";
+    cards = hikariFirst ? hikariCard + airCard : airCard + hikariCard;
+  } else {
+    lead = "自宅にWi-Fiがあると、外で使うデータが減って、スマホのプランも小さいもので足りるようになります。";
+    cards = hikariFirst ? hikariCard + airCard : airCard + hikariCard;
+  }
+  return '<div class="home-module">' +
+    '<p class="hm-title">自宅のネットも一緒に見ると</p>' +
+    '<p class="hm-lead">' + lead + '</p>' +
+    cards +
+    '<p class="ad-note" style="text-align:left; margin-top:12px;"><span class="ad-tag">広告</span>アフィリエイトリンクを含みます。リンク先で申し込むと、運営に紹介料が入る場合があります。</p>' +
+  '</div>';
+}
+
+function renderResult() {
+  const a = answers;
+  const result = diagnose(a);
+  const primary = result.primary;
+  const current = a.monthly;
+  const diff = current - primary.price;
+  const yearDiff = diff * 12;
+  const html = [];
+
+  /* 端末の分割払いが残っている場合は、金額の前に必ず注意を出す */
+  if (a.device === "yes") {
+    html.push(
+      '<div class="warn-box">' +
+        '<p class="warn-title">先に確認してください：端末の分割払いが残っています</p>' +
+        '<p>乗り換える前に、①残債の総額はいくらか、②乗り換え先のキャンペーンで相殺できるか、の2点を必ず確認してください。相殺できない場合は、残債を払い終えてから乗り換えたほうが無難です。下の金額は、残債を含まない通信料だけの比較です。</p>' +
+      '</div>'
+    );
+  }
+
+  html.push('<div class="card">');
+
+  /* 判定 */
+  if (diff > 0) {
+    html.push(
+      '<div class="verdict">' +
+        '<p class="v-label">今の使い方のままだと</p>' +
+        '<p class="v-main">月 <span class="num">' + fmt(diff) + '円</span> 安くなる可能性があります</p>' +
+        '<p class="v-year">年間だと <span class="num">' + fmt(yearDiff) + '円</span> の差になります</p>' +
+      '</div>'
+    );
+  } else {
+    html.push(
+      '<div class="verdict">' +
+        '<p class="v-label">診断結果</p>' +
+        '<p class="v-main" style="font-size:1.15rem;">今の契約は、使い方に合っている可能性があります</p>' +
+        '<p style="font-size:.93rem; color:var(--ink-sub); margin:8px 0 0;">今回の推奨プランは月' + fmt(primary.price) + '円で、あなたが入力した月額（' + fmt(current) + '円）と比べて安くなりませんでした。無理な乗り換えはおすすめしません。下の候補は「回線を変えたい場合の参考」としてご覧ください。</p>' +
+      '</div>'
+    );
+  }
+
+  /* 今 vs 推奨 の比較 */
+  html.push(
+    '<div class="compare">' +
+      '<div class="box"><p class="c-label">今の月額（入力値）</p><p class="c-price">' + fmt(current) + '円</p></div>' +
+      '<div class="arrow">→</div>' +
+      '<div class="box after' + (diff > 0 ? "" : " neutral") + '"><p class="c-label">推奨プラン</p><p class="c-price">' + fmt(primary.price) + '円</p></div>' +
+    '</div>'
+  );
+
+  /* 計算式の明示 */
+  if (diff > 0) {
+    html.push('<p class="formula">計算式： あなたが入力した月額 <b>' + fmt(current) + '円</b> − 推奨プラン <b>' + fmt(primary.price) + '円</b> ＝ 月 <b>' + fmt(diff) + '円</b>。年間はこれを12か月分にした <b>' + fmt(yearDiff) + '円</b> です。</p>');
+  } else {
+    html.push('<p class="formula">計算式： あなたが入力した月額 <b>' + fmt(current) + '円</b> − 推奨プラン <b>' + fmt(primary.price) + '円</b> ＝ <b>' + fmt(diff) + '円</b>（0円以下＝今のほうが安い、または同等です）。</p>');
+  }
+
+  if (a.carrier === "rakuten" && primary.carrier === "rakuten") {
+    html.push('<p style="font-size:.9rem; color:var(--ink-sub); margin:12px 0 0;">すでに楽天モバイルをお使いですね。使っているデータ量が、上の段階に収まっているかを確認してみてください。</p>');
+  }
+
+  html.push(planCardHTML(primary, true));
+  if (result.secondary) html.push(planCardHTML(result.secondary, false));
+
+  /* ahamo改定日（2026年12月1日）より前は、改定後の料金で計算している旨の注意を出す。12月1日以降は自動で消える */
+  if (new Date() < new Date(2026, 11, 1)) {
+    html.push(
+      '<div class="warn-box" style="margin:16px 0 0;">' +
+        '<p class="warn-title">ahamoの料金について</p>' +
+        '<p>ahamoは12月1日改定後の料金で計算しています。11月中は現行料金（30GB 2,970円）が適用されます。</p>' +
+      '</div>'
+    );
+  }
+
+  html.push('<p class="basis-note">' + BASIS_NOTE + '</p>');
+  html.push('</div>'); // .card
+
+  /* 自宅ネットの見直しモジュール（固定系の訴求） */
+  html.push(homeModuleHTML(a, primary));
+
+  /* シェア */
+  const pageUrl = location.href.split("#")[0];
+  const shareText = diff > 0
+    ? "スマホ代の料金診断をしたら、今の使い方だと月" + fmt(diff) + "円（年間" + fmt(yearDiff) + "円）安くなる可能性がありました。"
+    : "スマホ代の料金診断をやってみました。今の契約が使い方に合っているか、8つの質問でチェックできます。";
+  const xUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText) + "&url=" + encodeURIComponent(pageUrl);
+  const lineUrl = "https://line.me/R/msg/text/?" + encodeURIComponent(shareText + "\n" + pageUrl);
+  html.push(
+    '<div class="share-area">' +
+      '<p class="s-label">結果をシェアする</p>' +
+      '<div class="share-btns">' +
+        '<a class="share-btn x" href="' + xUrl + '" target="_blank" rel="noopener">Xでシェア</a>' +
+        '<a class="share-btn line" href="' + lineUrl + '" target="_blank" rel="noopener">LINEで送る</a>' +
+        (navigator.share ? '<button class="share-btn more" id="btnShareMore" type="button">その他</button>' : "") +
+      '</div>' +
+    '</div>' +
+    '<div class="restart-area"><button class="btn btn-ghost" id="btnRestart" type="button">もう一度診断する</button></div>'
+  );
+
+  $("resultBody").innerHTML = html.join("");
+  show("result");
+
+  const restart = $("btnRestart");
+  if (restart) restart.addEventListener("click", function () {
+    Object.keys(answers).forEach(function (k) { delete answers[k]; });
+    step = 0; show("start");
+  });
+  const more = $("btnShareMore");
+  if (more) more.addEventListener("click", function () {
+    navigator.share({ title: "スマホ代 料金診断", text: shareText, url: pageUrl }).catch(function () {});
+  });
+}
+</script>
+</body>
+</html>
