@@ -1,0 +1,42 @@
+name: Pinterest pins (daily)
+
+# 在庫（pins/queue.json）から1日1件ずつ、Pinterest 用のフィード（pins/*.xml）に足す。
+# 止めたいときは、このファイルの schedule の2行を消すか、Actions の画面でこのワークフローを無効にする。
+on:
+  schedule:
+    - cron: "0 1 * * *" # 毎日 10:00（日本時間）
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: pins
+  cancel-in-progress: false
+
+jobs:
+  ship:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: 在庫からフィードに足す
+        run: node .github/scripts/ship_pins.js
+      - name: 変更があれば保存する
+        run: |
+          if git diff --quiet -- pins; then
+            echo "変更なし"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pins
+          git commit -m "ピンをフィードに追加（自動）"
+          git push
+          # 自動の保存ではサイトが作り直されないことがあるので、作り直しを明示して頼む
+          curl -sS -X POST -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/pages/builds"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
