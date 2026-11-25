@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MNP予約番号は「最後」に取る｜スマホ代のトリセツ</title>
+<meta name="description" content="MNP予約番号の有効期限は基本15日。早く取りすぎると期限に追われます。取るだけでは解約にならないこと、切れても取り直せること、正しい順番（決める→取る→15日以内に開通）をまとめました。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MNP予約番号は「最後」に取る｜スマホ代のトリセツ">
+<meta property="og:description" content="有効期限は基本15日。予約番号は乗り換え先と日程が決まってから取るのが正しい順番です。">
+<meta property="og:url" content="https://sumahodai-toriset.github.io/articles/article-mnp.html">
+<meta name="twitter:card" content="summary">
+<style>
+  /* デザインは診断ツール本体（../index.html）の固定事項に合わせる
+     色: --ink #1c2733 / --accent #0b5cad / --save #1e7d4f / warn系
+     配置: 最大幅520px・左右余白18px */
+  :root{
+    --ink:#1c2733;
+    --ink-sub:#5a6a7a;
+    --bg:#f6f7f9;
+    --card:#ffffff;
+    --line:#e2e7ee;
+    --accent:#0b5cad;
+    --accent-dark:#084a8a;
+    --accent-soft:#eaf2fa;
+    --save:#1e7d4f;
+    --save-soft:#e9f5ee;
+    --warn-bg:#fff7e8;
+    --warn-line:#e8c87a;
+    --warn-ink:#6b5410;
+    --radius:14px;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html{ font-size:16px; }
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+    line-height:1.8; letter-spacing:.01em;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  }
+  .wrap{ max-width:520px; margin:0 auto; padding:0 18px calc(56px + env(safe-area-inset-bottom)); }
+
+  header{ padding:24px 0 8px; text-align:center; }
+  .brand{ font-size:.78rem; font-weight:700; letter-spacing:.14em; color:var(--accent); margin:0 0 4px; }
+  .brand a{ color:inherit; text-decoration:none; }
+  header h1{ font-size:1.42rem; margin:0; font-weight:800; letter-spacing:.02em; line-height:1.5; }
+  .lead{ color:var(--ink-sub); font-size:.94rem; margin:12px 0 0; text-align:left; }
+
+  article{ margin-top:20px; }
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px 20px; box-shadow:0 1px 2px rgba(20,40,60,.04), 0 8px 24px rgba(20,40,60,.05);
+    margin-bottom:16px;
+  }
+  h2{ font-size:1.12rem; font-weight:800; margin:0 0 10px; padding-left:12px; border-left:4px solid var(--accent); line-height:1.5; }
+  p{ margin:0 0 12px; font-size:.96rem; }
+  p:last-child{ margin-bottom:0; }
+  strong{ font-weight:700; }
+  .num{ font-variant-numeric:tabular-nums; }
+
+  .big-fact{
+    background:var(--accent-soft); border-radius:12px; padding:16px;
+    text-align:center; margin:4px 0 14px;
+  }
+  .big-fact .now{ color:var(--accent); font-size:1.5rem; font-weight:800; font-variant-numeric:tabular-nums; }
+  .big-fact .sub{ color:var(--ink-sub); font-size:.9rem; }
+
+  .check-list{ margin:6px 0 0; padding:0; list-style:none; }
+  .check-list li{ padding:9px 0 9px 30px; position:relative; font-size:.96rem; border-bottom:1px dashed var(--line); }
+  .check-list li:last-child{ border-bottom:none; }
+  .check-list li::before{
+    content:"✓"; position:absolute; left:2px; top:9px;
+    color:var(--save); font-weight:800;
+  }
+
+  .steps{ margin:6px 0 0; padding:0; list-style:none; counter-reset:step; }
+  .steps li{ padding:10px 0 10px 44px; position:relative; font-size:.96rem; border-bottom:1px dashed var(--line); }
+  .steps li:last-child{ border-bottom:none; }
+  .steps li::before{
+    counter-increment:step; content:counter(step);
+    position:absolute; left:0; top:10px;
+    width:30px; height:30px; border-radius:50%;
+    background:var(--accent); color:#fff; font-weight:800; font-size:.95rem;
+    display:flex; align-items:center; justify-content:center;
+    font-variant-numeric:tabular-nums;
+  }
+  .steps .head{ font-weight:700; display:block; }
+
+  .warn{
+    background:var(--warn-bg); border:1px solid var(--warn-line); border-radius:12px;
+    padding:14px 16px; margin:4px 0 0;
+  }
+  .warn p{ color:var(--warn-ink); font-size:.92rem; }
+  .note{ font-size:.8rem; color:var(--ink-sub); margin-top:10px; }
+
+  .cta{ text-align:center; }
+  .cta h2{ border-left:none; padding-left:0; text-align:center; }
+  .cta p{ color:var(--ink-sub); font-size:.92rem; }
+  .btn{
+    display:block; width:100%; text-align:center; text-decoration:none;
+    font-size:1.02rem; font-weight:700; border-radius:12px; padding:15px 18px;
+    transition:background .15s ease;
+  }
+  .btn-primary{ background:var(--accent); color:#fff; margin-top:16px; min-height:54px; }
+  @media (hover:hover){ .btn-primary:hover{ background:var(--accent-dark); } }
+  .btn-ghost{ background:#fff; color:var(--ink-sub); border:1px solid var(--line); font-weight:600; font-size:.92rem; padding:12px 16px; margin-top:10px; }
+  footer{ text-align:center; color:var(--ink-sub); font-size:.78rem; margin-top:28px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="brand"><a href="../index.html">スマホ代のトリセツ</a></p>
+    <h1>MNP予約番号は<br>「最後」に取る</h1>
+    <p class="lead">乗り換えの準備で、順番を間違えやすいのがMNP予約番号です。早く取りすぎると期限に追われて、かえって慌てます。先に結論から書きます。</p>
+  </header>
+
+  <article>
+
+    <section class="card">
+      <h2>結論：予約番号は、準備の最後に取る</h2>
+      <div class="big-fact">
+        <div class="now">有効期限は基本 <span class="num">15日</span></div>
+        <div class="sub">乗り換え先と日程が決まってから取るのが、正しい順番です</div>
+      </div>
+      <p>MNP予約番号には有効期限があり、<strong>基本15日</strong>です。先に取ってしまうと、残り日数を気にしながら乗り換え先を選ぶことになり、判断が雑になりがちです。番号を取るのは、準備の最後で大丈夫です。</p>
+    </section>
+
+    <section class="card">
+      <h2>なぜ「最後」なのか</h2>
+      <p>有効期限が基本15日ということは、番号を取った瞬間から、残り15日の中で開通までを終える必要が出てきます。乗り換え先のプラン選び、端末をどうするか、開通させる日の都合。その全部を15日の中に押し込むと、選ぶ時間が足りなくなる場合があります。</p>
+      <p>逆に、乗り換え先と日程を先に決めてしまえば、番号を取る作業は最後の手続きのひとつにすぎません。期限を気にする必要もほとんどなくなります。順番を入れ替えるだけで、同じ乗り換えでも慌て具合が変わります。</p>
+    </section>
+
+    <section class="card">
+      <h2>知っておくこと3つ</h2>
+      <ul class="check-list">
+        <li>有効期限は<strong>基本15日</strong></li>
+        <li>取るだけでは<strong>解約にならない</strong></li>
+        <li>期限が切れても<strong>取り直せる</strong></li>
+      </ul>
+      <p style="margin-top:12px;">この3つを知っていれば、番号まわりで慌てることはほとんどありません。とくに2つめは誤解が多いので、次で補足します。</p>
+    </section>
+
+    <section class="card">
+      <h2>誤解：取った瞬間に解約、ではありません</h2>
+      <div class="warn">
+        <p>予約番号を取っても、<strong>今の回線はそのまま使えます</strong>。取っただけでは解約になりません。</p>
+      </div>
+      <p style="margin-top:12px;">解約になるのは、乗り換え先での開通手続きが終わった時点です。「番号を取ったら今のスマホが止まるのでは」と心配して動けない人がいますが、その心配は要りません。ただし、開通が終われば前の回線は解約になるので、開通のタイミングだけは日程を決めてから進めてください。</p>
+    </section>
+
+    <section class="card">
+      <h2>正しい順番は、この3ステップ</h2>
+      <ol class="steps">
+        <li><span class="head">乗り換え先を決める</span>プランと端末まで決めます。ここが先です。</li>
+        <li><span class="head">予約番号を取る</span>電話・Web・店頭で取れます。</li>
+        <li><span class="head">期限内に開通する</span>15日以内に手続きを終えます。</li>
+      </ol>
+      <p style="margin-top:12px;">「決める → 取る → 15日以内に開通」。この順番だけ覚えてください。逆に、番号を先に取ってから乗り換え先を探し始めると、期限切れが近づいて焦る原因になります。</p>
+    </section>
+
+    <section class="card">
+      <h2>切れても慌てない。でも余裕は持つ</h2>
+      <p>期限が切れてしまった場合も、もう一度取り直せば済みます。取り直し自体は難しい手続きではありません。</p>
+      <p>ただし、残り日数が短いと受け付けない乗り換え先もあるので、開通までの日程には余裕を持ってください。「切れても取り直せる」ことと、「ギリギリで動く」ことは別です。決めてから取る、この順番なら余裕は自然に生まれます。</p>
+      <p class="note">※ 有効期限や受付条件は、会社や手続きの方法によって異なる場合があります。申し込み前に乗り換え先の案内をご確認ください。</p>
+    </section>
+
+    <section class="card">
+      <h2>よくある質問</h2>
+      <p><strong>Q. 番号を取ったら、今の回線はすぐ止まりますか？</strong><br>止まりません。取るだけでは解約にならず、今の回線はそのまま使えます。解約になるのは、乗り換え先で開通が終わった時点です。</p>
+      <p><strong>Q. 期限が切れたら、もう乗り換えできませんか？</strong><br>できます。期限切れは取り直せば済みます。ただし、取り直しの手間と日程の組み直しが増えるので、最初から順番を守る方が楽です。</p>
+      <p><strong>Q. 結局、いつ取るのが正解ですか？</strong><br>乗り換え先（プランと端末）と、開通させる日程が決まった後です。その状態なら、15日という期限は十分な長さになります。</p>
+    </section>
+
+    <section class="card cta">
+      <h2>まず、乗り換え先を決めるところから</h2>
+      <p>順番の最初は「乗り換え先を決める」です。最大10の質問に答えるだけで、今の使い方に合ったプランと、乗り換えた場合の月額の差が分かります。</p>
+      <a class="btn btn-primary" href="../index.html">スマホ代 料金診断をやってみる（無料）</a>
+      <a class="btn btn-ghost" href="https://sumahodai-toriset.github.io/">診断トップページはこちら</a>
+    </section>
+
+  </article>
+
+  <footer>
+    <p>スマホ代のトリセツ｜元ケータイ店員が、スマホ代の下げ方を取扱説明書にしています<br>料金・条件はプランや時期によって変わる場合があります。契約前に公式情報と契約内容をご確認ください。</p>
+  </footer>
+
+</div>
+</body>
+</html>

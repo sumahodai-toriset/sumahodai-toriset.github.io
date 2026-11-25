@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>違約金は今いくら？ 乗り換え前に確認する3つ｜スマホ代のトリセツ</title>
+<meta name="description" content="昔は9,500円が普通だった違約金は、今はかからないプランが主流です。乗り換え前に確認する3つ（契約期間の有無・端末の分割・割引の条件）と、間違えやすい「端末代は残る」話をまとめました。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="違約金は今いくら？ 乗り換え前に確認する3つ｜スマホ代のトリセツ">
+<meta property="og:description" content="昔は9,500円が普通だった違約金は、今はかからないプランが主流。乗り換え前に確認する3つをまとめました。">
+<meta property="og:url" content="https://sumahodai-toriset.github.io/articles/article-iyakukin.html">
+<meta name="twitter:card" content="summary">
+<style>
+  /* デザインは診断ツール本体（../index.html）の固定事項に合わせる
+     色: --ink #1c2733 / --accent #0b5cad / --save #1e7d4f / warn系
+     配置: 最大幅520px・左右余白18px */
+  :root{
+    --ink:#1c2733;
+    --ink-sub:#5a6a7a;
+    --bg:#f6f7f9;
+    --card:#ffffff;
+    --line:#e2e7ee;
+    --accent:#0b5cad;
+    --accent-dark:#084a8a;
+    --accent-soft:#eaf2fa;
+    --save:#1e7d4f;
+    --save-soft:#e9f5ee;
+    --warn-bg:#fff7e8;
+    --warn-line:#e8c87a;
+    --warn-ink:#6b5410;
+    --radius:14px;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html{ font-size:16px; }
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+    line-height:1.8; letter-spacing:.01em;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  }
+  .wrap{ max-width:520px; margin:0 auto; padding:0 18px calc(56px + env(safe-area-inset-bottom)); }
+
+  header{ padding:24px 0 8px; text-align:center; }
+  .brand{ font-size:.78rem; font-weight:700; letter-spacing:.14em; color:var(--accent); margin:0 0 4px; }
+  .brand a{ color:inherit; text-decoration:none; }
+  header h1{ font-size:1.42rem; margin:0; font-weight:800; letter-spacing:.02em; line-height:1.5; }
+  .lead{ color:var(--ink-sub); font-size:.94rem; margin:12px 0 0; text-align:left; }
+
+  article{ margin-top:20px; }
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px 20px; box-shadow:0 1px 2px rgba(20,40,60,.04), 0 8px 24px rgba(20,40,60,.05);
+    margin-bottom:16px;
+  }
+  h2{ font-size:1.12rem; font-weight:800; margin:0 0 10px; padding-left:12px; border-left:4px solid var(--accent); line-height:1.5; }
+  p{ margin:0 0 12px; font-size:.96rem; }
+  p:last-child{ margin-bottom:0; }
+  strong{ font-weight:700; }
+  .num{ font-variant-numeric:tabular-nums; }
+
+  .big-fact{
+    background:var(--save-soft); border-radius:12px; padding:16px;
+    text-align:center; margin:4px 0 14px;
+  }
+  .big-fact .old{ color:var(--ink-sub); font-size:.9rem; }
+  .big-fact .now{ color:var(--save); font-size:1.5rem; font-weight:800; font-variant-numeric:tabular-nums; }
+
+  .check-list{ margin:6px 0 0; padding:0; list-style:none; }
+  .check-list li{ padding:9px 0 9px 30px; position:relative; font-size:.96rem; border-bottom:1px dashed var(--line); }
+  .check-list li:last-child{ border-bottom:none; }
+  .check-list li::before{
+    content:"✓"; position:absolute; left:2px; top:9px;
+    color:var(--save); font-weight:800;
+  }
+
+  table{ width:100%; border-collapse:collapse; font-size:.92rem; margin:6px 0 4px; }
+  th, td{ border:1px solid var(--line); padding:9px 10px; text-align:left; }
+  th{ background:var(--accent-soft); font-weight:700; }
+  tr.best td{ background:var(--save-soft); font-weight:700; }
+
+  .warn{
+    background:var(--warn-bg); border:1px solid var(--warn-line); border-radius:12px;
+    padding:14px 16px; margin:4px 0 0;
+  }
+  .warn p{ color:var(--warn-ink); font-size:.92rem; }
+  .note{ font-size:.8rem; color:var(--ink-sub); margin-top:10px; }
+
+  .cta{ text-align:center; }
+  .cta h2{ border-left:none; padding-left:0; text-align:center; }
+  .cta p{ color:var(--ink-sub); font-size:.92rem; }
+  .btn{
+    display:block; width:100%; text-align:center; text-decoration:none;
+    font-size:1.02rem; font-weight:700; border-radius:12px; padding:15px 18px;
+    transition:background .15s ease;
+  }
+  .btn-primary{ background:var(--accent); color:#fff; margin-top:16px; min-height:54px; }
+  @media (hover:hover){ .btn-primary:hover{ background:var(--accent-dark); } }
+  .btn-ghost{ background:#fff; color:var(--ink-sub); border:1px solid var(--line); font-weight:600; font-size:.92rem; padding:12px 16px; margin-top:10px; }
+  footer{ text-align:center; color:var(--ink-sub); font-size:.78rem; margin-top:28px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="brand"><a href="../index.html">スマホ代のトリセツ</a></p>
+    <h1>違約金は今いくら？<br>乗り換え前に確認する3つ</h1>
+    <p class="lead">「違約金が怖くて乗り換えられない」という相談が、今も一番多いです。でも、その心配の多くは昔の前提のまま止まっています。先に結論から書きます。</p>
+  </header>
+
+  <article>
+
+    <section class="card">
+      <h2>結論：違約金は、ほぼ過去の話</h2>
+      <div class="big-fact">
+        <div class="old">昔の違約金：<span class="num">9,500円</span>が普通</div>
+        <div class="now">今は <span class="num">0円</span> が主流</div>
+      </div>
+      <p>昔は2年縛りが普通で、途中で解約すると<strong>9,500円</strong>の違約金がかかる契約が一般的でした。今の主要プランは、契約期間の縛りがないものが主流で、<strong>違約金がかからないプランが主流</strong>になっています。</p>
+      <p>もちろん、すべての契約に当てはまるとは限りません。プランによって条件は異なるので、最後は自分の契約で確認してください。この記事では、その確認のしかたをまとめます。</p>
+    </section>
+
+    <section class="card">
+      <h2>なぜ今も「違約金が怖い」ままなのか</h2>
+      <p>理由は単純で、昔の契約の印象が強いからです。2年縛りが普通だった頃は、「途中でやめると9,500円」というのが当たり前の前提でした。契約したのがその時代の人ほど、今のプランに移った後も、頭の中の前提だけが昔のまま残っている場合があります。</p>
+      <p>実際には、プランの世代が変われば条件も変わります。「昔そうだった」は「今もそうだ」の根拠にはなりません。だからこそ、思い込みではなく契約内容の画面で確かめることが大事です。</p>
+    </section>
+
+    <section class="card">
+      <h2>乗り換え前に確認する3つ</h2>
+      <p>見る場所は3つだけです。どれも契約内容の画面で確認できます。</p>
+      <ul class="check-list">
+        <li><strong>契約期間の有無</strong>（縛りがある契約かどうか。マイページで見られます）</li>
+        <li><strong>端末の分割</strong>が残っていないか（残額がいくらか）</li>
+        <li><strong>割引の条件</strong>に期間の縛りがないか</li>
+      </ul>
+      <p style="margin-top:12px;">1つめの<strong>契約期間</strong>は、違約金そのものの有無を決める場所です。縛りなしのプランなら、解約のタイミングを気にする必要はありません。</p>
+      <p>2つめの<strong>端末の分割</strong>は、違約金とは別のお金です。今は端末を分割で買うのが主流なので、乗り換えの時点で残額がある人は少なくありません。残額そのものは「損」ではなく端末代の残りですが、乗り換えた後も支払いが続く点は知っておいてください。</p>
+      <p>3つめの<strong>割引の条件</strong>は見落としやすい所です。割引によっては、適用に期間の条件が付いている場合があります。条件から外れると割引が終わることもあるので、「割引がいつまで・何をしたら終わるか」まで見ておくと安心です。</p>
+      <p>この3つに問題がなければ、違約金を理由に止まる必要はほとんどの場合ありません。逆に、どれかに引っかかる場合は、金額と残り期間を見てから動く順番を考えます。</p>
+    </section>
+
+    <section class="card">
+      <h2>昔と今の違い</h2>
+      <table>
+        <tr><th></th><th>昔</th><th>今</th></tr>
+        <tr><td>契約期間</td><td>2年縛りが普通</td><td>縛りなしが主流</td></tr>
+        <tr class="best"><td>違約金</td><td>9,500円が普通</td><td>かからないプランが主流</td></tr>
+        <tr><td>端末代</td><td>一括か分割</td><td>分割が主流</td></tr>
+      </table>
+      <p class="note">※ 一般的な傾向です。プランによるので、自分の契約で確認してください。</p>
+    </section>
+
+    <section class="card">
+      <h2>注意：縛りがなくても「端末代」は残る</h2>
+      <div class="warn">
+        <p>ここは混同されやすい所です。<strong>回線の違約金と、端末の分割払いは別物</strong>です。</p>
+      </div>
+      <p style="margin-top:12px;">契約期間の縛りがなく違約金が0円でも、端末を分割で買っている場合、その残りは残ります。乗り換えても分割は元の会社へ払い続ける形になります。「違約金がかからない＝何も払わずに済む」ではないので、端末の残額だけは先に確認してください。</p>
+    </section>
+
+    <section class="card">
+      <h2>確認はマイページで3分</h2>
+      <p>確認の手順はシンプルです。<strong>マイページの「契約内容」を開く</strong>だけです。契約期間・更新月・分割の残りは、だいたい同じ画面に出ます。店に行く必要はありません。</p>
+      <p>確認してみると、実は動ける状態だったという人がほとんどです。止めているのは違約金ではなく、「確認していないこと」の場合が多いのです。まず見ることから始めてください。</p>
+    </section>
+
+    <section class="card cta">
+      <h2>乗り換えたら、いくら下がる？</h2>
+      <p>確認が終わったら、次は金額です。最大10の質問に答えるだけで、今の使い方に合ったプランと、乗り換えた場合の月額の差が分かります。</p>
+      <a class="btn btn-primary" href="../index.html">スマホ代 料金診断をやってみる（無料）</a>
+      <a class="btn btn-ghost" href="https://sumahodai-toriset.github.io/">診断トップページはこちら</a>
+    </section>
+
+  </article>
+
+  <footer>
+    <p>スマホ代のトリセツ｜元ケータイ店員が、スマホ代の下げ方を取扱説明書にしています<br>料金・条件はプランや時期によって変わる場合があります。契約前に公式情報と契約内容をご確認ください。</p>
+  </footer>
+
+</div>
+</body>
+</html>
