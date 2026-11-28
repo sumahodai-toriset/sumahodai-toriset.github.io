@@ -52,7 +52,8 @@
   "image": "https://sumahodai-toriset.github.io/pins/img/pin_44.jpg",
   "image_bytes": 109807,
   "guid": "sumahodai-toriset-sumahodai-pin44",
-  "shipped": false
+  "shipped": true,
+  "shipped_at": "2026-11-28"
  },
  {
   "id": "sumahodai-pin45",
